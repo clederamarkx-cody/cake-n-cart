@@ -62,6 +62,10 @@ def index():
     other_cakes = [c for c in cakes if c['id'] != 1]
     return render_template('index.html', featured_banana=featured_banana, cakes=other_cakes)
 
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
+
 @app.route('/product/<int:cake_id>')
 def product(cake_id):
     cake = next((c for c in cakes if c['id'] == cake_id), None)
