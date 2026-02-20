@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cake & Cart by Malou | Premium Banana Cakes</title>
+    <meta name="description"
+        content="Experience the best Banana Cake in town. Fresh, organic, and delicious. Order online from Cake & Cart by Malou.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='cart.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo">Cake & Cart<span class="logo-accent">.</span></a>
+            <ul class="nav-links">
+                <li class="mobile-close-btn"><i class="fas fa-times"></i></li>
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="nav-icons">
+                <a href="#" class="cart-icon"><i class="fas fa-shopping-bag"></i><span class="cart-count">0</span></a>
+                <a href="#" class="user-icon"><i class="far fa-user"></i></a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <h3>Cake & Cart</h3>
+                <p>Baking happiness, one banana cake at a time.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="#">All Cakes</a></li>
+                    <li><a href="#">Best Sellers</a></li>
+                    <li><a href="#">New Arrivals</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Cake & Cart by Malou. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="menu-overlay"></div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <span class="cart-close-btn"><i class="fas fa-times"></i></span>
+        </div>
+        <div class="cart-items">
+            <div class="empty-cart">
+                <i class="fas fa-shopping-basket"></i>
+                <p>Your cart is empty</p>
+                <a href="#shop" class="btn btn-primary btn-sm" onclick="toggleCart()">Start Shopping</a>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span>₱0.00</span>
+            </div>
+            <button class="btn btn-primary btn-block">Checkout</button>
+        </div>
+    </div>
+
+    <script>
+        // Data State
+        let cart = [];
+
+        // UI Toggles
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const closeBtn = document.querySelector('.mobile-close-btn');
+        const navLinks = document.querySelector('.nav-links');
+
+        const cartIcon = document.querySelector('.cart-icon');
+        const cartSidebar = document.querySelector('.cart-sidebar');
+        const cartCloseBtn = document.querySelector('.cart-close-btn');
+        const cartItemsContainer = document.querySelector('.cart-items');
+        const cartTotalEl = document.querySelector('.cart-total span:last-child');
+        const cartCountEl = document.querySelector('.cart-count');
+
+        const overlay = document.querySelector('.menu-overlay');
+
+        function toggleMenu() {
+            navLinks.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.classList.toggle('no-scroll');
+            // Close cart if open
+            if (cartSidebar.classList.contains('active')) {
+                cartSidebar.classList.remove('active');
+            }
+        }
+
+        function toggleCart() {
+            cartSidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.classList.toggle('no-scroll');
+            // Close menu if open
+            if (navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+            }
+        }
+
+        function openCart() {
+            if (!cartSidebar.classList.contains('active')) {
+                toggleCart();
+            }
+        }
+
+        function closeAll() {
+            navLinks.classList.remove('active');
+            cartSidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+        }
+
+        // Cart Logic
+        function addToCart(id, name, price, image) {
+            const existingItem = cart.find(item => item.id === id);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    name: name,
+                    price: price,
+                    image: image,
+                    quantity: 1
+                });
+            }
+
+            renderCart();
+            openCart(); // Automatically open cart
+        }
+
+        function removeFromCart(id) {
+            // Find element to animate out
+            // Since we re-render the whole list, this is tricky without React/VDOM. 
+            // Simple approach: filter data, re-render.
+            // For "Optimize effects", smooth removal is nice.
+            // Let's toggle items:
+            cart = cart.filter(item => item.id !== id);
+            renderCart();
+        }
+
+        function updateQuantity(id, change) {
+            const item = cart.find(item => item.id === id);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(id);
+                } else {
+                    renderCart();
+                }
+            }
+        }
+
+        function renderCart() {
+            // Update Count
+            const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+            cartCountEl.textContent = totalItems;
+
+            // Update Total
+            const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            cartTotalEl.textContent = '₱' + total.toFixed(2);
+
+            // Render Items
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>Your cart is empty</p>
+                        <a href="#shop" class="btn btn-primary btn-sm" onclick="toggleCart()">Start Shopping</a>
+                    </div>
+                `;
+            } else {
+                cartItemsContainer.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-img">
+                            <img src="/static/images/${item.image}" alt="${item.name}">
+                        </div>
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <div class="cart-item-price">₱${item.price}</div>
+                            <div class="cart-item-controls">
+                                <button onclick="updateQuantity(${item.id}, -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="cart-item-remove" onclick="removeFromCart(${item.id})">
+                            <i class="fas fa-trash-alt"></i>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Event Listeners
+        if (menuBtn) menuBtn.addEventListener('click', toggleMenu);
+        if (closeBtn) closeBtn.addEventListener('click', toggleMenu);
+
+        if (cartIcon) {
+            cartIcon.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleCart();
+            });
+        }
+        if (cartCloseBtn) cartCloseBtn.addEventListener('click', toggleCart);
+
+        if (overlay) overlay.addEventListener('click', closeAll);
+
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (navLinks.classList.contains('active')) toggleMenu();
+            });
+        });
+
+        // Contact Form
+        const contactForm = document.querySelector('.contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const btn = contactForm.querySelector('button');
+                const originalText = btn.textContent;
+                btn.textContent = 'Message Sent!';
+                btn.style.backgroundColor = '#4CAF50'; // Green
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '';
+                    contactForm.reset();
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+
+</html>

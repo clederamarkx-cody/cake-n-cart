@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="hero" class="hero">
+    <div class="container hero-container">
+        <div class="hero-content">
+            <span class="hero-tag">Best in Town</span>
+            <h1>Malou's Signature <br><span class="highlight">Banana Cake</span></h1>
+            <p>Moist, rich, and unforgettable. Baked fresh daily with organic bananas and a secret blend of spices.
+                Taste the difference today.</p>
+            <div class="hero-cta">
+                <a href="#shop" class="btn btn-primary">Order Now</a>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">5k+</span>
+                    <span class="stat-label">Happy Customers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4.9</span>
+                    <span class="stat-label">Rating</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="image-wrapper">
+                <img src="{{ url_for('static', filename='images/hero-banana-cake.svg') }}" alt="Delicious Banana Cake">
+                <div class="floating-card">
+                    <i class="fas fa-star"></i>
+                    <span>Top Rated</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container features-grid">
+        <div class="feature-card">
+            <i class="fas fa-leaf"></i>
+            <h3>100% Organic</h3>
+            <p>We use only the freshest organic bananas.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-shipping-fast"></i>
+            <h3>Fast Delivery</h3>
+            <p>From our oven to your doorstep in hours.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-heart"></i>
+            <h3>Made with Love</h3>
+            <p>Handcrafted with passion by Malou.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Shop Section -->
+<section id="shop" class="shop">
+    <div class="container">
+        <div class="section-header">
+            <h2>Our Delights</h2>
+            <p>Explore our premium selection of cakes.</p>
+        </div>
+
+        <div class="product-grid">
+            <!-- Featured Banana Cake -->
+            {% if featured_banana %}
+            <div class="product-card featured">
+                {% if featured_banana.badge %}
+                <span class="badge">{{ featured_banana.badge }}</span>
+                {% endif %}
+                <div class="product-image">
+                    <img src="{{ url_for('static', filename='images/' + featured_banana.image) }}"
+                        alt="{{ featured_banana.name }}">
+                </div>
+                <div class="product-info">
+                    <h3>{{ featured_banana.name }}</h3>
+                    <p class="description">{{ featured_banana.description }}</p>
+                    <div class="price-action">
+                        <span class="price">₱{{ featured_banana.price }}</span>
+                        <button class="btn btn-sm"
+                            onclick="addToCart(1, '{{ featured_banana.name }}', {{ featured_banana.price }}, '{{ featured_banana.image }}')">Add
+                            to Cart</button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Other Cakes -->
+            {% for cake in cakes %}
+            <div class="product-card">
+                {% if cake.badge %}
+                <span class="badge">{{ cake.badge }}</span>
+                {% endif %}
+                <div class="product-image">
+                    <img src="{{ url_for('static', filename='images/' + cake.image) }}" alt="{{ cake.name }}">
+                </div>
+                <div class="product-info">
+                    <h3>{{ cake.name }}</h3>
+                    <p class="description">{{ cake.description }}</p>
+                    <div class="price-action">
+                        <span class="price">₱{{ cake.price }}</span>
+                        <button class="btn btn-outline-sm"
+                            onclick="addToCart({{ cake.id }}, '{{ cake.name }}', {{ cake.price }}, '{{ cake.image }}')">Add</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="container">
+        <h2>What People Say</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <p>"The best banana cake I've ever had! Not too sweet, just perfect."</p>
+                <div class="author">
+                    <span>Sarah J.</span>
+                    <div class="stars">★★★★★</div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p>"Ordered for a birthday and it was a hit. Highly recommend!"</p>
+                <div class="author">
+                    <span>Mike T.</span>
+                    <div class="stars">★★★★★</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about">
+    <div class="container about-container">
+        <div class="about-image">
+            <img src="{{ url_for('static', filename='images/hero-banana-cake.svg') }}" alt="Malou baking">
+            <!-- Using existing placeholder -->
+            <div class="about-badge">
+                <span>Est. 2020</span>
+            </div>
+        </div>
+        <div class="about-content">
+            <span class="hero-tag">Our Story</span>
+            <h2>Baked with Passion, <br>Served with Love</h2>
+            <p>It all started in Malou’s small kitchen, with a single banana bread recipe passed down from her
+                grandmother. Today, Cake & Cart is a symbol of quality and comfort.</p>
+            <p>We believe in using only 100% organic ingredients, supporting local farmers, and never cutting corners.
+                Every cake that leaves our kitchen is a promise of happiness.</p>
+            <div class="about-values">
+                <div class="value-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>No Preservatives</span>
+                </div>
+                <div class="value-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Farm Fresh Eggs</span>
+                </div>
+                <div class="value-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Real Butter</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact">
+    <div class="container contact-container">
+        <div class="contact-info">
+            <h2>Get in Touch</h2>
+            <p>Have a question or want to order a custom cake for your event? We'd love to hear from you.</p>
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                    <h4>Location</h4>
+                    <p>123 Baker Street, Sweet City, SC 90210</p>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-phone-alt"></i>
+                <div>
+                    <h4>Phone</h4>
+                    <p>(555) 123-4567</p>
+                </div>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <div>
+                    <h4>Email</h4>
+                    <p>hello@cakeandcart.com</p>
+                </div>
+            </div>
+        </div>
+        <div class="contact-form-wrapper">
+            <form class="contact-form">
+                <div class="form-group">
+                    <input type="text" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <textarea rows="5" placeholder="Your Message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
